@@ -168,6 +168,11 @@
         <img src="{{ url_for('static', filename='images/' + image) }}" alt="Result image">
         {% endif %}
 
+        <!-- แสดงคำใบ้ -->
+        {% if hint %}
+        <p><strong>Hint: {{ hint }}</strong></p>
+        {% endif %}
+
         <!-- ฟอร์มทายคำ -->
         {% if not result %}
         <form action="/check_answer" method="post">
@@ -218,7 +223,7 @@
     <!-- ถ้าผู้ใช้ล็อกอินเป็น admin จะมีปุ่ม Finish -->
     {% if session['username']|lower == 'admin' %}
     <form action="/finish_game" method="post">
-        <button type="submit" class="finish-btn">Finish and Score Full</button>
+        <button type="submit" class="finish-btn">Finish</button>
     </form>
     {% endif %}
 
