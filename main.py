@@ -269,7 +269,7 @@ def finish_game():
         username = session['username']
         # เพิ่มคะแนนเต็มให้ผู้เล่น
         # สมมติว่า score เป็นตัวแปรที่เก็บคะแนนของผู้เล่น
-        session['score'] = 5  # ปรับคะแนนเต็มที่คุณต้องการ
+        session['score'] = 4  # ปรับคะแนนเต็มที่คุณต้องการ
         return redirect(url_for('win'))  # เปลี่ยนไปหน้า win
     return redirect(url_for('home'))
 
