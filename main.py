@@ -16,6 +16,7 @@ word_image_pairs = [
     {"word": "Cat", "image": "cat.gif"},
     {"word": "Car", "image": "car.gif"},
     {"word": "Bird", "image": "bird.gif"},
+    {"word": "test", "image": "test.gif"}
 ]
 
 
@@ -91,9 +92,9 @@ def credit():
 # หน้าเกม
 @app.route('/start_game')
 def start_game():
+    # กำหนดคะแนนเริ่มต้นเป็น 0 ถ้าไม่เคยมีการเริ่มเกม
     if 'score' not in session:
         session['score'] = 0
-        session['score_saved'] = False  # เพิ่มไว้ตอนเริ่มเกมใหม่ด้วย
 
     # เชื่อมต่อฐานข้อมูล
     conn = get_db_connection()
@@ -167,17 +168,13 @@ def restart():
     conn.commit()
     conn.close()
 
-    # รีเซ็ตคะแนนและสถานะในเซสชัน
+    # รีเซ็ตคะแนนในเซสชัน
     session['score'] = 0
-    session['score_saved'] = False  # reset flag เพื่อเล่นรอบใหม่
     return redirect(url_for('start_game'))
 
 # หน้า "You Win!"
 @app.route('/win')
 def win():
-    if session.get('score_saved', False):  # ถ้าเคยบันทึกแล้วไม่ให้บันทึกซ้ำ
-        return render_template('win.html', score=session.get('score', 0))
-
     # ดึงคะแนนและชื่อผู้ใช้
     score = session.get('score', 0)
     username = session.get('username', 'Guest')  # ดึงชื่อผู้เล่นจาก session
@@ -189,9 +186,7 @@ def win():
     conn.commit()
     conn.close()
 
-    session['score_saved'] = True  # ตั้ง flag ว่าบันทึกแล้ว
-
-    return render_template('win.html', score=score)
+    return render_template('win.html', score=score)  # ไปที่หน้า win.html
 
 # หน้า Career (ประวัติการเล่น)
 @app.route('/history')
@@ -275,7 +270,7 @@ def finish_game():
         username = session['username']
         # เพิ่มคะแนนเต็มให้ผู้เล่น
         # สมมติว่า score เป็นตัวแปรที่เก็บคะแนนของผู้เล่น
-        session['score'] = 4  # ปรับคะแนนเต็มที่คุณต้องการ
+        session['score'] = 5  # ปรับคะแนนเต็มที่คุณต้องการ
         return redirect(url_for('win'))  # เปลี่ยนไปหน้า win
     return redirect(url_for('home'))
 
