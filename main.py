@@ -12,12 +12,11 @@ app.secret_key = 'your_secret_key'  # ใช้เซสชัน
 app.register_blueprint(login_bp, url_prefix='/login')
 
 word_image_pairs = [
-    {"word": "Dog", "image": "dog.gif"},
-    {"word": "Cat", "image": "cat.gif"},
-    {"word": "Car", "image": "car.gif"},
-    {"word": "Bird", "image": "bird.gif"},
+    {"word": "Dog", "image": "dog.gif", "hint": "A common pet, known for being loyal and friendly."},
+    {"word": "Cat", "image": "cat.gif", "hint": "A small domesticated animal, often kept as a pet, known for being independent and agile."},
+    {"word": "Car", "image": "car.gif", "hint": "A vehicle that is typically used for personal transportation, runs on roads."},
+    {"word": "Bird", "image": "bird.gif", "hint": "An animal with feathers, wings, and beak, capable of flying."},
 ]
-
 
 # ฟังก์ชันเชื่อมต่อฐานข้อมูล
 def get_db_connection():
@@ -88,7 +87,6 @@ def delete_score(history_id):
 def credit():
     return render_template('credit.html')  # ไปที่หน้า credit.html
 
-# หน้าเกม
 @app.route('/start_game')
 def start_game():
     # กำหนดคะแนนเริ่มต้นเป็น 0 ถ้าไม่เคยมีการเริ่มเกม
@@ -112,8 +110,9 @@ def start_game():
     # เลือกรูปภาพที่ยังไม่ถูกทาย
     random_pair = random.choice(available_pairs)
 
-    # ส่งข้อมูลไปยัง index.html
-    return render_template('index.html', image=random_pair["image"], word=random_pair["word"], result=None, score=session['score'])
+    # ส่งข้อมูลไปยัง index.html พร้อมคำใบ้
+    return render_template('index.html', image=random_pair["image"], word=random_pair["word"], hint=random_pair["hint"], result=None, score=session['score'])
+
 
 # ตรวจสอบคำตอบ
 @app.route('/check_answer', methods=['POST'])
