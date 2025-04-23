@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, session, redirect, url_for
 import random
 import sqlite3
+import os
 from datetime import datetime
 from login import login_bp  # เพิ่มการนำเข้า login blueprint
 
@@ -283,4 +284,5 @@ add_username_column()
 
 if __name__ == '__main__':
     create_db()  # เรียกใช้ฟังก์ชันสร้างฐานข้อมูลและตาราง
-    app.run(debug=True)
+    port = int(os.getenv('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
