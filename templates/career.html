@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Career - Guess the Word Game</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', sans-serif;
+            background-color: #FFEC99;
+            color: #333;
+            text-align: center;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            color: #FF6347;
+        }
+
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #FF6347;
+            color: white;
+        }
+
+        .btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            background-color: #1E90FF;
+            color: white;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background-color: #1C86EE;
+        }
+
+        .reset-btn {
+            padding: 10px 20px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            background-color: #FF4500;
+            color: white;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 10;
+        }
+
+        .reset-btn:hover {
+            background-color: #FF6347;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Career - Guess the Word Game</h1>
+
+    <!-- ตารางประวัติการเล่น -->
+    <table>
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Score</th>
+                <th>Date</th>
+                {% if session['username']|lower == 'admin' %}
+                <th>Actions</th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for history in game_history %}
+                <tr>
+                    <td>
+                        {% if session['username']|lower == 'admin' %}
+                            <form action="{{ url_for('update_user', history_id=history['id']) }}" method="post">
+                                <input type="text" name="username" value="{{ history['username'] }}" required>
+                                <button type="submit">Update Username</button>
+                            </form>
+                        {% else %}
+                            {{ history['username'] }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if session['username']|lower == 'admin' %}
+                            <form action="{{ url_for('update_score', history_id=history['id']) }}" method="post">
+                                <input type="number" name="score" value="{{ history['score'] }}" required>
+                                <button type="submit">Update</button>
+                            </form>
+                        {% else %}
+                            {{ history['score'] }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if session['username']|lower == 'admin' %}
+                            <form action="{{ url_for('update_date', history_id=history['id']) }}" method="post">
+                                <input type="text" name="date" value="{{ history['date'] }}" required>
+                                <button type="submit">Update Date</button>
+                            </form>
+                        {% else %}
+                            {{ history['date'] }}
+                        {% endif %}
+                    </td>
+                    {% if session['username']|lower == 'admin' %}
+                        <td>
+                            <form action="{{ url_for('delete_score', history_id=history['id']) }}" method="post">
+                                <button type="submit" style="background-color: red; color: white;">Delete</button>
+                            </form>
+                        </td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if session['username']|lower == 'admin' %}
+        <!-- ปุ่มรีเซ็ตประวัติการเล่น (เฉพาะ admin) -->
+        <form action="{{ url_for('reset_career') }}" method="post">
+            <button type="submit" class="reset-btn">Reset Scores</button>
+        </form>
+    {% endif %}
+
+    <!-- ปุ่มย้อนกลับไปหน้าแรก -->
+    <a href="/" class="btn">Back to Home</a>
+
+</body>
+</html>

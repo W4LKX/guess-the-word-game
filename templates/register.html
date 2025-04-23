@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Comic Sans MS', sans-serif;
+            background-color: #fcd182; /* สีพื้นหลังเดียวกับ home */
+            color: #333;
+            text-align: center;
+        }
+
+        .box {
+            background: #ffdb99;
+            padding: 30px;
+            border-radius: 10px;
+            width: 500px;
+            height: 500px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        h2 {
+            font-size: 2.5em;
+            color: #FF6347;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"], input[type="password"] {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            width: 100%;
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        button {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background: #1E90FF;
+            color: white;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 5px;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background-color: #1C86EE;
+        }
+
+        .error {
+            color: #ff4444;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .match-error {
+            color: #ff4444;
+            display: none;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .checkbox-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .checkbox-container label {
+            color: #333; /* เปลี่ยนสีของข้อความ Show Password */
+            font-size: 14px;
+            margin-left: 5px;
+        }
+
+        .back-button {
+            background: #f44336;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+
+        input[type="text"]:focus, input[type="password"]:focus {
+            outline: none;
+            border: 2px solid #00bcd4;
+            background: #f0f0f0;
+        }
+
+        /* ปรับสีสำหรับปุ่ม Show Password */
+        #show_password {
+            background-color: #32CD32;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2>Register</h2>
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+        <form id="registerForm" method="post" onsubmit="return validatePasswords()">
+            <!-- แจ้งเตือนถ้า username มีภาษาไทย -->
+            <div id="usernameError" class="error" style="display: none;">Username cannot contain Thai characters!</div>
+            
+            <input type="text" name="username" id="username" placeholder="Username" required oninput="validateUsername()">
+            <input type="password" name="password" id="password" placeholder="Password" required>
+            <input type="password" name="confirm_password" id="confirm_password" placeholder="Confirm Password" required>
+            
+            <!-- ข้อความแจ้งเตือนถ้ารหัสไม่ตรงกัน -->
+            <div id="matchError" class="match-error">Passwords do not match!</div>
+            
+            <!-- ติ๊กถูกเพื่อแสดง/ซ่อนรหัสผ่าน -->
+            <div class="checkbox-container">
+                <input type="checkbox" id="show_password"> 
+                <label for="show_password">Show Password</label>
+            </div>
+            
+            <button type="submit">Register</button>
+        </form>
+        <form action="{{ url_for('login.login') }}">
+            <button type="submit" class="back-button">Back to Login</button>
+        </form>
+    </div>
+
+    <script>
+        // ฟังก์ชันตรวจสอบการตรงกันของ Password และ Confirm Password
+        function validatePasswords() {
+            var password = document.getElementById("password").value;
+            var confirmPassword = document.getElementById("confirm_password").value;
+            var errorMessage = document.getElementById("matchError");
+
+            if (password !== confirmPassword) {
+                errorMessage.style.display = "block";  // แสดงข้อความเตือน
+                return false;  // หยุดการส่งฟอร์ม
+            } else {
+                errorMessage.style.display = "none";  // ซ่อนข้อความเตือน
+                return true;  // ส่งฟอร์ม
+            }
+        }
+
+        // ฟังก์ชันตรวจสอบว่า username มีภาษาไทยหรือไม่
+        function validateUsername() {
+            var username = document.getElementById("username").value;
+            var usernameError = document.getElementById("usernameError");
+
+            // ตรวจสอบว่า username มีตัวอักษรภาษาไทยหรือไม่
+            var regex = /[\u0E00-\u0E7F]/; // Unicode range for Thai characters
+            if (regex.test(username)) {
+                usernameError.style.display = "block";  // แสดงข้อความเตือน
+            } else {
+                usernameError.style.display = "none";  // ซ่อนข้อความเตือน
+            }
+        }
+
+        // การตรวจสอบอัตโนมัติเมื่อกรอกข้อมูล
+        document.getElementById("confirm_password").addEventListener("input", validatePasswords);
+
+        // ฟังก์ชันให้แสดงหรือซ่อนรหัสผ่าน
+        document.getElementById("show_password").addEventListener("change", function() {
+            var passwordField = document.getElementById("password");
+            var confirmPasswordField = document.getElementById("confirm_password");
+
+            if (this.checked) {
+                passwordField.type = "text";
+                confirmPasswordField.type = "text";
+            } else {
+                passwordField.type = "password";
+                confirmPasswordField.type = "password";
+            }
+        });
+    </script>
+</body>
+</html>
