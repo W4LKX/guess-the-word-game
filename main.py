@@ -1,7 +1,6 @@
 from flask import Flask, render_template, request, session, redirect, url_for
 import random
 import sqlite3
-import os
 from datetime import datetime
 from login import login_bp  # เพิ่มการนำเข้า login blueprint
 
@@ -91,9 +90,9 @@ def credit():
 # หน้าเกม
 @app.route('/start_game')
 def start_game():
-    # กำหนดคะแนนเริ่มต้นเป็น 0 ถ้าไม่เคยมีการเริ่มเกม
     if 'score' not in session:
         session['score'] = 0
+        session['score_saved'] = False  # เพิ่มไว้ตอนเริ่มเกมใหม่ด้วย
 
     # เชื่อมต่อฐานข้อมูล
     conn = get_db_connection()
@@ -167,13 +166,17 @@ def restart():
     conn.commit()
     conn.close()
 
-    # รีเซ็ตคะแนนในเซสชัน
+    # รีเซ็ตคะแนนและสถานะในเซสชัน
     session['score'] = 0
+    session['score_saved'] = False  # reset flag เพื่อเล่นรอบใหม่
     return redirect(url_for('start_game'))
 
 # หน้า "You Win!"
 @app.route('/win')
 def win():
+    if session.get('score_saved', False):  # ถ้าเคยบันทึกแล้วไม่ให้บันทึกซ้ำ
+        return render_template('win.html', score=session.get('score', 0))
+
     # ดึงคะแนนและชื่อผู้ใช้
     score = session.get('score', 0)
     username = session.get('username', 'Guest')  # ดึงชื่อผู้เล่นจาก session
@@ -185,7 +188,9 @@ def win():
     conn.commit()
     conn.close()
 
-    return render_template('win.html', score=score)  # ไปที่หน้า win.html
+    session['score_saved'] = True  # ตั้ง flag ว่าบันทึกแล้ว
+
+    return render_template('win.html', score=score)
 
 # หน้า Career (ประวัติการเล่น)
 @app.route('/history')
@@ -278,5 +283,4 @@ add_username_column()
 
 if __name__ == '__main__':
     create_db()  # เรียกใช้ฟังก์ชันสร้างฐานข้อมูลและตาราง
-    port = int(os.getenv('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(debug=True)
