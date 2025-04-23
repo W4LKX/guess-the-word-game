@@ -16,7 +16,6 @@ word_image_pairs = [
     {"word": "Cat", "image": "cat.gif"},
     {"word": "Car", "image": "car.gif"},
     {"word": "Bird", "image": "bird.gif"},
-    {"word": "test", "image": "test.gif"}
 ]
 
 
